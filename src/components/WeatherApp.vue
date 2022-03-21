@@ -80,19 +80,39 @@ export default {
 
 	methods: {
 		async getWeatherData() {
-			const url = `https://goweather.herokuapp.com/weather/${this.citySearch}`;
-			const response = await fetch(url);
-			const { temperature, description } = await response.json();
-			let alteredTemperature = temperature.replace(' °C', '°').replace('+', '');
+			try {
+				const url = `https://goweather.herokuapp.com/weather/${this.citySearch}`;
+				const response = await fetch(url);
+				const { temperature, description } = await response.json();
 
-			this.setSuggestion(temperature);
+				if (temperature === '' && description === '') {
+					this.outputData.cityName = `${this.citySearch} is not a city`;
+					this.outputData.temperature = '';
+					this.outputData.iconURL = this.loadIcon('error');
+					this.outputData.weatherDescription = '';
+					this.suggestionHTML = 'We can\'t give suggestions for a city that doesn\'t exist, sadly.'
+					return;
+				}
 
-			this.setIconURL(description);
+				let alteredTemperature = temperature
+					.replace(' °C', '°')
+					.replace('+', '');
 
-			this.outputData.temperature = this.stringMutation(alteredTemperature);
-			this.outputData.weatherDescription = description;
-			this.outputData.cityName = this.capitalizeString(this.citySearch);
-			this.citySearch = '';
+				this.setSuggestion(temperature);
+
+				this.setIconURL(description);
+
+				this.outputData.temperature = this.stringMutation(alteredTemperature);
+				this.outputData.weatherDescription = description;
+				this.outputData.cityName = this.capitalizeString(this.citySearch);
+				this.citySearch = '';
+			} catch (error) {
+				console.error(
+					'⚠️⚠️⚠️⚠️⚠️⚠️ERROR ERROR ERROR DUDE LOOK HERE ERROR!⚠️⚠️⚠️⚠️⚠️' +
+						error
+				);
+				console.error(error.message);
+			}
 		},
 
 		setIconURL(description) {
@@ -100,10 +120,6 @@ export default {
 			const sunnyIcon = string.includes('sun') || string.includes('clear');
 			const rainyIcon = string.includes('rain') || string.includes('drizzle');
 			const cloudIcon = string.includes('cloud');
-
-			// const sunnyIcon = string === 'sunny' || string === 'clear';
-
-			// const cloudIcon = string === 'partly cloudy';
 			let iconURL = '';
 
 			//Switch (true) here checks each boolean stored in the variables above. So basically if the case is true === true;
