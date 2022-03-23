@@ -90,7 +90,8 @@ export default {
 					this.outputData.temperature = '';
 					this.outputData.iconURL = this.loadIcon('error');
 					this.outputData.weatherDescription = '';
-					this.suggestionHTML = 'We can\'t give suggestions for a city that doesn\'t exist, sadly.'
+					this.suggestionHTML =
+						"We can't give suggestions for a city that doesn't exist, sadly.";
 					return;
 				}
 
@@ -112,6 +113,10 @@ export default {
 						error
 				);
 				console.error(error.message);
+
+				this.outputData.iconURL = this.loadIcon('error');
+				this.suggestionHTML = `Something went wrong with ${error.message}`;
+				this.outputData.weatherDescription = 'There was an error';
 			}
 		},
 
